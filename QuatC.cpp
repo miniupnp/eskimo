@@ -11,7 +11,9 @@
 //  http://moppi.inside.org/
 //-------------------------------------------------------------------------
 
+#ifdef WIN32
 #include <windows.h>
+#endif
 #include "PajaTypes.h"
 #include "Vector3C.h"
 #include "Matrix3C.h"

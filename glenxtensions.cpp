@@ -11,9 +11,11 @@
 //  http://moppi.inside.org/
 //-------------------------------------------------------------------------
 
+#include <string.h>
 #include "glextensions.h"
 
 
+#if 0
 // Multitexture
 PFNGLMULTITEXCOORD1FARBPROC		glMultiTexCoord1fARB		= NULL;
 PFNGLMULTITEXCOORD2FARBPROC		glMultiTexCoord2fARB		= NULL;
@@ -22,6 +24,7 @@ PFNGLMULTITEXCOORD3FARBPROC		glMultiTexCoord3fARB		= NULL;
 PFNGLMULTITEXCOORD4FARBPROC		glMultiTexCoord4fARB		= NULL;
 PFNGLACTIVETEXTUREARBPROC		glActiveTextureARB			= NULL;
 PFNGLCLIENTACTIVETEXTUREARBPROC	glClientActiveTextureARB	= NULL;	
+#endif
 
 volatile bool					g_bMultiTexture = false;
 
@@ -35,8 +38,9 @@ init_extensions()
 		szExtensions = (char*)glGetString( GL_EXTENSIONS );
 
 		if( szExtensions && strstr( szExtensions, "GL_ARB_multitexture" ) != 0 &&
-			strstr( szExtensions, "GL_EXT_texture_env_combine" ) != 0 ) {	
+			strstr( szExtensions, "GL_EXT_texture_env_combine" ) != 0 ) {
 
+#if 0
 			glMultiTexCoord1fARB	 = (PFNGLMULTITEXCOORD1FARBPROC)wglGetProcAddress( "glMultiTexCoord1fARB" );
 			glMultiTexCoord2fARB	 = (PFNGLMULTITEXCOORD2FARBPROC)wglGetProcAddress( "glMultiTexCoord2fARB" );
 			glMultiTexCoord2fvARB	 = (PFNGLMULTITEXCOORD2FVARBPROC)wglGetProcAddress( "glMultiTexCoord2fvARB" );
@@ -45,6 +49,7 @@ init_extensions()
 			glActiveTextureARB		 = (PFNGLACTIVETEXTUREARBPROC)wglGetProcAddress( "glActiveTextureARB" );
 			glClientActiveTextureARB = (PFNGLCLIENTACTIVETEXTUREARBPROC)wglGetProcAddress( "glClientActiveTextureARB" );
 			g_bMultiTexture = true;
+#endif
 		}
 
 	}

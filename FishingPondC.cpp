@@ -11,7 +11,9 @@
 //  http://moppi.inside.org/
 //-------------------------------------------------------------------------
 
+#ifdef WIN32
 #include <windows.h>
+#endif
 #include <stdio.h>
 #include "PajaTypes.h"
 #include "Vector3C.h"
@@ -29,6 +31,7 @@ using namespace PajaTypes;
 //
 // Debug printf...
 //
+#if 0
 static
 void
 TRACE( const char* szFormat, ...  )
@@ -40,7 +43,7 @@ TRACE( const char* szFormat, ...  )
 	va_end( rList );
 	OutputDebugString( szMsg );
 }
-
+#endif
 
 FishingPondC::FishingPondC() :
 	m_ui32Rows( 0 ),

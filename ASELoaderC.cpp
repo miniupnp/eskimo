@@ -15,12 +15,19 @@
 // or dead tired, because the node TM and vertex transform stuff is plain stupid!
 //
 
+#ifdef _MSC_VER
 #pragma warning( disable : 4786 )		// long names by STL
+#define vsnprintf _vsnprintf
+#endif
 
 #include "ASELoaderC.h"
+#ifdef WIN32
 #include <windows.h>
+#endif
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdarg.h>
+#include "debuglog.h"
 
 #include "ScenegraphItemI.h"
 #include "MeshC.h"
@@ -40,7 +47,7 @@ TRACE( const char* szFormat, ...  )
 	char	szMsg[256];
 	va_list	rList;
 	va_start( rList, szFormat );
-	_vsnprintf( szMsg, 255, szFormat, rList );
+	vsnprintf( szMsg, 255, szFormat, rList );
 	va_end( rList );
 	OutputDebugString( szMsg );
 }

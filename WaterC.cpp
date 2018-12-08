@@ -11,9 +11,11 @@
 //  http://moppi.inside.org/
 //-------------------------------------------------------------------------
 
+#ifdef WIN32
 #include <windows.h>
-#include <gl/gl.h>
-#include <gl/glu.h>
+#endif
+#include <GL/gl.h>
+#include <GL/glu.h>
 #include "PajaTypes.h"
 #include "Vector3C.h"
 #include "ColorC.h"

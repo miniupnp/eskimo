@@ -11,19 +11,28 @@
 //  http://moppi.inside.org/
 //-------------------------------------------------------------------------
 
+#ifdef WIN32
 #include <windows.h>
+#endif
 #include <stdio.h>
 #include <string.h>
+#include <stdarg.h>
 #include "glextensions.h"
-#include <gl/gl.h>
-#include <gl/glu.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
 #include "PajaTypes.h"
 #include "Vector3C.h"
 #include "FishingPondC.h"
 #include "ColorC.h"
 #include "FishingContextC.h"
+#ifdef WIN32
 #include "fmod.h"
+#endif
 #include "GLWindowC.h"
+#include "debuglog.h"
+#ifdef _MSC_VER
+#define vsnprintf _vsnprintf
+#endif
 
 using namespace PajaTypes;
 
@@ -38,7 +47,7 @@ TRACE( const char* szFormat, ...  )
 	char	szMsg[256];
 	va_list	rList;
 	va_start( rList, szFormat );
-	_vsnprintf( szMsg, 255, szFormat, rList );
+	vsnprintf( szMsg, 255, szFormat, rList );
 	va_end( rList );
 	OutputDebugString( szMsg );
 }
@@ -57,8 +66,10 @@ FishingContextC::FishingContextC() :
 	m_pPond = new FishingPondC;
 	m_pWater = new WaterC;
 
+#ifdef FMOD_VERSION
 	for( uint32 i = 0; i < MAX_SOUNDS; i++ )
 		m_rSoundFx[i] = 0;
+#endif
 }
 
 FishingContextC::~FishingContextC()
@@ -289,16 +300,22 @@ FishingContextC::load_level( const char* szName )
 bool
 FishingContextC::load_sound( uint32 ui32Sound, const char* szName )
 {
+#ifdef FMOD_VERSION
 	m_rSoundFx[ui32Sound] = FSOUND_Sample_Load( FSOUND_FREE, szName, FSOUND_NORMAL, 0 );
 	return m_rSoundFx[ui32Sound] != 0;
+#else
+	return true;
+#endif
 }
 
 void
 FishingContextC::play_sound( uint32 ui32Sound )
 {
+#ifdef FMOD_VERSION
 //	TRACE( "FishingContextC::play_sound( %d )\n", ui32Sound );
 	if( ui32Sound < MAX_SOUNDS && m_rSoundFx[ui32Sound] )
 		FSOUND_PlaySound( FSOUND_FREE, m_rSoundFx[ui32Sound] );
+#endif
 }
 
 FishingPondC*

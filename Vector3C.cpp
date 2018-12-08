@@ -11,7 +11,7 @@
 //  http://moppi.inside.org/
 //-------------------------------------------------------------------------
 
-#include "vector3c.h"
+#include "Vector3C.h"
 #include <math.h>
 
 

@@ -11,8 +11,10 @@
 //  http://moppi.inside.org/
 //-------------------------------------------------------------------------
 
+#ifdef WIN32
 #include <windows.h>
-#include <gl/gl.h>
+#endif
+#include <GL/gl.h>
 
 #include "PajaTypes.h"
 #include "Vector3C.h"
@@ -426,7 +428,7 @@ FishingLineC::draw( float32 f32RotY, FishingContextC* pContext )
 	
 		float	f32T = 0;
 		float	f32DT = 1.0f / (float32)((m_pSpline->get_point_count() * 8));
-		for( i = 0; i < (m_pSpline->get_point_count() * 8); i++ ) {
+		for(int i = 0; i < (m_pSpline->get_point_count() * 8); i++ ) {
 			Vector3C	rPos = m_pSpline->get_value( f32T );
 			glVertex3f( rPos[0], rPos[1], rPos[2] );
 			f32T += f32DT;

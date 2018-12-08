@@ -23,7 +23,9 @@ class FishingContextC;
 #include "WaterC.h"
 #include "FishingRodC.h"
 #include "ColorC.h"
+#ifdef WIN32
 #include "fmod.h"
+#endif
 #include <vector>
 #include <string>
 #include "GLWindowC.h"
@@ -97,7 +99,9 @@ protected:
 	PajaTypes::float32	m_f32CatchHeight;
 	PajaTypes::float32	m_f32Frame;
 	PajaTypes::float32	m_f32Aspect;
+#ifdef FMOD_VERSION
 	FSOUND_SAMPLE*		m_rSoundFx[MAX_SOUNDS];
+#endif
 	FishingRodC*		m_pPlayer;
 
 	PajaTypes::int32	m_i32Timer;

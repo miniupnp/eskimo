@@ -11,15 +11,26 @@
 //  http://moppi.inside.org/
 //-------------------------------------------------------------------------
 
+#ifdef WIN32
 #define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
 #include <windows.h>
-#include <gl\gl.h>
-#include <gl\glu.h>
+#endif
+#include <GL/gl.h>
+#include <GL/glu.h>
 #include <stdio.h>
-#include "ijl.h"
+#include <strings.h>
+#include "debuglog.h"
+//#include "ijl.h"  // XXX TODO
 #include "PajaTypes.h"
 #include "TextureC.h"
 
+#ifndef _MAX_EXT
+#define _MAX_EXT 16
+#endif
+
+#ifdef _MSC_VER
+#define strcasecmp _stricmp
+#endif
 
 using namespace PajaTypes;
 
@@ -70,12 +81,15 @@ TextureC::load( const char* szName )
 	fclose( pStream );
 
 
+#ifdef _MSC_VER
 	char szExt[_MAX_EXT];
-
 	_splitpath( szName, NULL, NULL, NULL, szExt );
+#else
+	const char * szExt = strrchr(szName, '.');
+#endif
 
 
-	if( _stricmp( ".jpg", szExt ) == 0 ) {
+	if( strcasecmp( ".jpg", szExt ) == 0 ) {
 		if( !uncompress_jpeg( pCompressedData, i32CompressedSize ) ) {
 			delete [] pCompressedData;
 			return false;
@@ -101,6 +115,7 @@ TextureC::uncompress_jpeg( uint8* pCompData, int32 i32CompDataSize )
 	delete [] m_pData;
 	m_pData = 0;
 
+#if 0 // XXX TODO
     JPEG_CORE_PROPERTIES	image;
     memset( &image, 0, sizeof( JPEG_CORE_PROPERTIES ) );
 
@@ -179,7 +194,7 @@ TextureC::uncompress_jpeg( uint8* pCompData, int32 i32CompDataSize )
     if( ijlFree( &image ) != IJL_OK ) {
         OutputDebugString( "Cannot free Intel(R) JPEG library" );
     }
-
+#endif
 	return true;
 }
 

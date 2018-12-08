@@ -14,9 +14,11 @@
 #ifndef __ESKIMO_GLWINDOWC_H__
 #define __ESKIMO_GLWINDOWC_H__
 
+#ifdef WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-#include <gl\gl.h>
+#endif
+#include <GL/gl.h>
 #include "PajaTypes.h"
 #include "ColorC.h"
 #include "Vector2C.h"
@@ -53,9 +55,11 @@ public:
 	GLWindowC();
 	~GLWindowC();
 
+#ifdef WIN32
 	bool		init( HINSTANCE hInstance, PajaTypes::uint32 ui32Flags,
 					  PajaTypes::uint32 ui32Width = 0, PajaTypes::uint32 ui32Height = 0,
 					  PajaTypes::uint32 ui32BPP = 0 );
+#endif
 	void		destroy();
 	void		flush();
 
@@ -65,9 +69,11 @@ public:
 	void		set_size( PajaTypes::int32 int32X, PajaTypes::int32 int32Y,
 							PajaTypes::int32 i32Width, PajaTypes::int32 i32Height );
 
+#ifdef WIN32
 	HWND		get_hwnd() const;
 	HDC			get_hdc() const;
 	HGLRC		get_glrc() const;
+#endif
 
 	// viewport
 	PajaTypes::int32	get_pos_x() const;
@@ -83,6 +89,7 @@ public:
 	bool				get_pressed( PajaTypes::int32 i32Flags );
 
 protected:
+#ifdef WIN32
 	static bool				set_pixelformat( HDC hDC, PajaTypes::int32 i32BPP );
 	static LRESULT CALLBACK	stub_window_proc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
 
@@ -90,6 +97,7 @@ protected:
 	HDC					m_hDC;
 	HGLRC				m_hGLRC;
 	HWND				m_hWnd;
+#endif
 	bool				m_bResolutionChanged;
 	PajaTypes::int32	m_i32WinX, m_i32WinY, m_i32WinWidth, m_i32WinHeight, m_i32BPP;
 

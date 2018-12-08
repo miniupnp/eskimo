@@ -11,10 +11,14 @@
 //  http://moppi.inside.org/
 //-------------------------------------------------------------------------
 
+#ifdef WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-#include <gl\gl.h>
-#include <gl\glu.h>
+#else
+#include <time.h>
+#endif
+#include <GL/gl.h>
+#include <GL/glu.h>
 #include "glextensions.h"
 #include <stdio.h>
 #include <string>
@@ -23,6 +27,7 @@
 #include <vector>
 #include <string>
 #include <assert.h>
+#include "debuglog.h"
 
 #include "GLWindowC.h"
 #include "TextureC.h"
@@ -31,8 +36,10 @@
 #include "FishMeshC.h"
 #include "FontC.h"
 
+#ifdef WIN32
 #include "fmod.h"
 #include "fmod_errors.h"
+#endif
 
 #include "FishingContextC.h"
 #include "FishC.h"
@@ -40,8 +47,11 @@
 #include "FishingRodC.h"
 #include "WaterC.h"
 
-
 #include "res/resource.h"
+
+#ifdef _MSC_VER
+#define snprintf _snprintf
+#endif
 
 using namespace PajaTypes;
 
@@ -51,19 +61,23 @@ using namespace PajaTypes;
 //
 // Debug printf...
 //
+
 static
 void
 TRACE( const char* szFormat, ...  )
 {
+#if 0
 	char	szMsg[256];
 	va_list	rList;
 	va_start( rList, szFormat );
 	_vsnprintf( szMsg, 255, szFormat, rList );
 	va_end( rList );
 	OutputDebugString( szMsg );
+#endif
 }
 
 
+#if 0
 static
 GL_ERROR( const char* szName )
 {
@@ -75,21 +89,24 @@ GL_ERROR( const char* szName )
 		OutputDebugString( "\n" );
 	}
 }
+#endif
 
 
 
-
+#if 0
 static
 float32
 frand()
 {
 	return ((float32)rand() / (float32)RAND_MAX);
 }
+#endif
 
 static
 int32
 get_time()
 {
+#ifdef WIN32
 	LARGE_INTEGER	d;
 	double			i, j;
 	QueryPerformanceCounter( &d );
@@ -97,6 +114,11 @@ get_time()
 	QueryPerformanceFrequency( &d );
 	j = (double)d.QuadPart;
 	return (int32)((i / j) * 1000.0);
+#else
+	struct timespec ts;
+	clock_gettime(CLOCK_MONOTONIC, &ts);
+	return ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
+#endif
 }
 
 
@@ -109,6 +131,7 @@ int32			g_i32Detail = 1;
 
 
 // Init dialog proc.
+#ifdef WIN32
 BOOL CALLBACK
 InitDlgProc( HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam )
 {
@@ -176,23 +199,28 @@ InitDlgProc( HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam )
 		break;
 	}
 }
+#endif
 
 
-
-
+#ifdef WIN32
 int APIENTRY WinMain( HINSTANCE hInstance,
                       HINSTANCE hPrevInstance,
                       LPSTR     lpCmdLine,
                       int       nCmdShow )
+#else
+int main(int argc, char * * argv)
+#endif
 {
 
 	GLWindowC	rWnd;
 
 
 	// Show init dialog.
+#ifdef WIN32
 	if( DialogBox( hInstance, MAKEINTRESOURCE( IDD_INITDIALOG ), NULL, InitDlgProc ) != IDOK ) {
 		return 0;
 	}
+#endif
 
 	int32	i32Fullscreen, i32Width, i32Height, i32BPP;
 	int32	i32ReflTexWidth = 0, i32ReflTexHeight = 0;
@@ -220,11 +248,15 @@ int APIENTRY WinMain( HINSTANCE hInstance,
 	if( i32ReflTexHeight > i32Height )
 		i32ReflTexHeight /= 2;
 
+#ifdef WIN32
 	rWnd.init( hInstance, i32Fullscreen, i32Width, i32Height, i32BPP );
+#endif
 
 	if( !init_extensions() ) {
 		rWnd.destroy();
+#ifdef WIN32
 		::MessageBox( NULL, "3D hardware is not present or\ndoes not support the required attributes (needs at least OpenGL 1.2 support)" , "Error", MB_OK | MB_ICONERROR );
+#endif
 		return -1;
 	}
 
@@ -233,6 +265,7 @@ int APIENTRY WinMain( HINSTANCE hInstance,
 	// Init FSOUND
 	//
 
+#ifdef FMOD_VERSION
 	FSOUND_SetOutput( FSOUND_OUTPUT_DSOUND );
 	if( !FSOUND_Init( 44100, 32, 0 ) ) {
 		rWnd.destroy();
@@ -258,10 +291,11 @@ int APIENTRY WinMain( HINSTANCE hInstance,
 		FSOUND_Close();
 		return -1;
 	}
+#endif
 
-
+#ifdef WIN32
 	MSG	rMsg;
-
+#endif
 
 	TextureC*	pEskimoImage = new TextureC;
 	if( !pEskimoImage->load( "maps/eskimoimage.tga" ) )
@@ -429,18 +463,21 @@ int APIENTRY WinMain( HINSTANCE hInstance,
 	}
 
 
-
+#ifdef FMOD_VERSION
 	int32	i32WaterCh = FSOUND_Stream_Play( FSOUND_FREE, pWaterStream );
 	int32	i32AmbCh = FSOUND_Stream_Play( FSOUND_FREE, pAmbientStream );
 	FSOUND_SetVolume( i32AmbCh, 150 );
-
+#endif
 
 	do {
+#ifdef WIN32
 		if( PeekMessage( &rMsg , rWnd.get_hwnd() , 0 , 0 , PM_REMOVE ) ) {
 			TranslateMessage( &rMsg ) ;
 			DispatchMessage( &rMsg );
 		}
-		else {
+		else
+#endif
+		{
 
 
 			//
@@ -706,7 +743,7 @@ int APIENTRY WinMain( HINSTANCE hInstance,
 
 
 				// score
-				_snprintf( szMsg, 255, "%d", pCtx->get_score() );
+				snprintf( szMsg, 255, "%d", pCtx->get_score() );
 				f32TxtLen = pFont->get_text_length( szMsg, 1 );
 
 				f32TxtLen /= 2.0f;
@@ -783,7 +820,7 @@ int APIENTRY WinMain( HINSTANCE hInstance,
 
 
 				// score
-				_snprintf( szMsg, 255, "%d", pCtx->get_score() );
+				snprintf( szMsg, 255, "%d", pCtx->get_score() );
 				f32TxtLen = pFont->get_text_length( szMsg, 1 );
 
 				f32TxtLen /= 2.0f;
@@ -891,7 +928,7 @@ int APIENTRY WinMain( HINSTANCE hInstance,
 					i32Min++;
 					i32Sec -= 60;
 				}
-				_snprintf( szMsg, 255, "%d:%02d", i32Min, i32Sec );
+				snprintf( szMsg, 255, "%d:%02d", i32Min, i32Sec );
 				f32TxtLen = pFont->get_text_length( szMsg, 1 );
 
 				glColor4ub( 0, 0, 0, 128 );
@@ -929,7 +966,7 @@ int APIENTRY WinMain( HINSTANCE hInstance,
 				pFont->draw_text( 70 - f32TxtLen, rWnd.get_height() - 45, "CATCH", 0.3f );
 
 
-				_snprintf( szMsg, 255, "%d/%02d", pCtx->get_pond()->get_fish_count() - pCtx->get_pond()->get_alive_fish_count(), pCtx->get_pond()->get_fish_count() );
+				snprintf( szMsg, 255, "%d/%02d", pCtx->get_pond()->get_fish_count() - pCtx->get_pond()->get_alive_fish_count(), pCtx->get_pond()->get_fish_count() );
 				f32TxtLen = pFont->get_text_length( szMsg, 0.7f );
 
 				glColor4ub( 0, 0, 0, 128 );
@@ -958,7 +995,7 @@ int APIENTRY WinMain( HINSTANCE hInstance,
 				pFont->draw_text( 70 - f32TxtLen, rWnd.get_height() - 75, "BAITS LEFT", 0.3f );
 
 
-				_snprintf( szMsg, 255, "%d", pRod->get_bait_count() );
+				snprintf( szMsg, 255, "%d", pRod->get_bait_count() );
 				f32TxtLen = pFont->get_text_length( szMsg, 0.5f );
 
 				glColor4ub( 0, 0, 0, 128 );
@@ -1027,7 +1064,7 @@ int APIENTRY WinMain( HINSTANCE hInstance,
 				pFont->draw_text( rWnd.get_width() - 150 - f32TxtLen, rWnd.get_height() - 45, "SCORE", 0.3f );
 
 
-				_snprintf( szMsg, 255, "%d", pCtx->get_score() );
+				snprintf( szMsg, 255, "%d", pCtx->get_score() );
 				f32TxtLen = pFont->get_text_length( szMsg, 0.7f );
 
 				glColor4ub( 0, 0, 0, 128 );
@@ -1142,7 +1179,7 @@ int APIENTRY WinMain( HINSTANCE hInstance,
 				for( uint32 i = 0; i < 10; i++ ) {
 
 					// Rank
-					_snprintf( szMsg, 255, "%d.", i + 1 );
+					snprintf( szMsg, 255, "%d.", i + 1 );
 					glColor3ub( 0, 0, 0 );
 					pFont->bind();
 					pFont->draw_text( i32CenterX + 270, i32CenterY + 250 - i * 20 + 2, szMsg, 0.3f );
@@ -1160,7 +1197,7 @@ int APIENTRY WinMain( HINSTANCE hInstance,
 					pFont->draw_text( i32CenterX + 270 + 23, i32CenterY + 250 - i * 20, szNames[i], 0.5f );
 
 					// Score
-					_snprintf( szMsg, 255, "%d", (10 - i) * 3133 );
+					snprintf( szMsg, 255, "%d", (10 - i) * 3133 );
 					f32TxtLen = pFont->get_text_length( szMsg, 0.5f );
 
 					glColor4ub( 0, 0, 0, 128 );
@@ -1187,7 +1224,7 @@ int APIENTRY WinMain( HINSTANCE hInstance,
 
 				for( uint32 i = 0; i < 8; i++ ) {
 
-					_snprintf( szMsg, 255, "Stage %d - %d", (i / 2) + 1, (i & 1) + 1 );
+					snprintf( szMsg, 255, "Stage %d - %d", (i / 2) + 1, (i & 1) + 1 );
 
 					if( i < i32MaxLevel ) {		// max level is one based
 						glColor4ub( 0, 0, 0, 128 );
@@ -1336,7 +1373,11 @@ int APIENTRY WinMain( HINSTANCE hInstance,
 
 			rWnd.flush();
 		}
-	} while( rMsg.message != DP_END_PREVIEW && !bQuit );
+	} while(
+#ifdef WIN32
+		 rMsg.message != DP_END_PREVIEW &&
+#endif
+		 !bQuit );
 
 
 	// Delete textures
@@ -1355,7 +1396,7 @@ int APIENTRY WinMain( HINSTANCE hInstance,
 
 	rWnd.destroy();
 
-
+#ifdef FMOD_VERSION
 	for( uint32 i = 0; i < 256; i++ ) {
 		FSOUND_SetSFXMasterVolume( 255 - i );
 		Sleep( 2 );
@@ -1366,7 +1407,7 @@ int APIENTRY WinMain( HINSTANCE hInstance,
 
 	// close music sys
 	FSOUND_Close();
-
+#endif
 
 
 	{

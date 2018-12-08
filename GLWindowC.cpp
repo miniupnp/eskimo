@@ -11,10 +11,12 @@
 //  http://moppi.inside.org/
 //-------------------------------------------------------------------------
 
+#ifdef WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-#include <gl\gl.h>
-#include <gl\glu.h>
+#endif
+#include <GL/gl.h>
+#include <GL/glu.h>
 #include <stdio.h>
 #include <string>
 #include "GLWindowC.h"
@@ -24,9 +26,11 @@ using namespace PajaTypes;
 
 
 GLWindowC::GLWindowC() :
+#ifdef WIN32
 	m_hWnd( 0 ),
 	m_hDC( 0 ),
 	m_hGLRC( 0 ),
+#endif
 	m_bResolutionChanged( false ),
 	m_i32WinX( 0 ),
 	m_i32WinY( 0 ),
@@ -42,10 +46,13 @@ GLWindowC::GLWindowC() :
 
 GLWindowC::~GLWindowC()
 {
+#ifdef WIN32
 	if( m_hWnd )
 		destroy();
+#endif
 }
 
+#ifdef WIN32
 LRESULT CALLBACK
 GLWindowC::stub_window_proc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 {
@@ -332,25 +339,33 @@ GLWindowC::init( HINSTANCE hInstance, uint32 ui32Flags, uint32 ui32Width, uint32
 
 	return true;
 }
+#endif
 
 void
 GLWindowC::destroy()
 {
 	if( m_bResolutionChanged ) {
 		// restore display mode
+#ifdef WIN32
 		ChangeDisplaySettings( NULL, 0 );
+#endif
 		m_bResolutionChanged = false;
 	}
 
+#ifdef WIN32
 	DestroyWindow( m_hWnd );
+#endif
 }
 
 void
 GLWindowC::flush()
 {
+#ifdef WIN32
 	SwapBuffers( m_hDC );
+#endif
 }
 
+#ifdef WIN32
 HWND
 GLWindowC::get_hwnd() const
 {
@@ -368,6 +383,7 @@ GLWindowC::get_glrc() const
 {
 	return m_hGLRC;
 }
+#endif
 
 int32
 GLWindowC::get_pos_x() const

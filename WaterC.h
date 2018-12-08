@@ -84,4 +84,4 @@ protected:
 };
 
 
-#endif __WATERC_H__
+#endif // __WATERC_H__
