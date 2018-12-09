@@ -18,6 +18,7 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <stdio.h>
+#include <string.h>
 #include <strings.h>
 #include "debuglog.h"
 //#include "ijl.h"  // XXX TODO
