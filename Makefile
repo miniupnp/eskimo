@@ -16,4 +16,4 @@ clean:
 	$(RM) $(OBJS) $(BIN)
 
 $(BIN):	$(OBJS)
-	$(CXX) $(LDFLAGS) $(LDLIBS) -o $@ $^
+	$(CXX) $(LDFLAGS) -o $@ $^ $(LDLIBS)
