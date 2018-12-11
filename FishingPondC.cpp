@@ -15,6 +15,7 @@
 #include <windows.h>
 #endif
 #include <stdio.h>
+#include <stdlib.h>
 #include "PajaTypes.h"
 #include "Vector3C.h"
 #include "FishC.h"
