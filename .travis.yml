@@ -15,6 +15,7 @@ sudo: false
 before_install:
   - 'if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew update > /dev/null ; fi'
   - 'if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install sdl2 sdl2_image ; fi'
+  - 'if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install glfw3 glew ; fi'
 
 script:
   - 'cd $TRAVIS_BUILD_DIR'
