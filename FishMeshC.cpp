@@ -17,6 +17,7 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <stdio.h>
+#include <string.h>
 #include "debuglog.h"
 #include "PajaTypes.h"
 #include "Vector3C.h"
