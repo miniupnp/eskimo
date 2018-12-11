@@ -40,7 +40,7 @@ using namespace PajaTypes;
 using namespace std;
 
 
-
+#if 0
 static
 void
 TRACE( const char* szFormat, ...  )
@@ -52,7 +52,7 @@ TRACE( const char* szFormat, ...  )
 	va_end( rList );
 	OutputDebugString( szMsg );
 }
-
+#endif
 
 
 ASELoaderC::ASELoaderC()
