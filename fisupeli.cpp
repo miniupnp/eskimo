@@ -17,6 +17,9 @@
 #else
 #include <time.h>
 #endif
+#if USE_SDL2
+#include <SDL.h>
+#endif
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include "glextensions.h"
@@ -248,7 +251,13 @@ int main(int argc, char * * argv)
 	if( i32ReflTexHeight > i32Height )
 		i32ReflTexHeight /= 2;
 
-#ifdef WIN32
+#if USE_SDL2
+	if(SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO) < 0) {
+		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to init SDL2 : %s\n", SDL_GetError());
+		return -1;
+	}
+	rWnd.init(i32Fullscreen, i32Width, i32Height, i32BPP );
+#elif defined(WIN32)
 	rWnd.init( hInstance, i32Fullscreen, i32Width, i32Height, i32BPP );
 #endif
 
@@ -470,7 +479,13 @@ int main(int argc, char * * argv)
 #endif
 
 	do {
-#ifdef WIN32
+#ifdef USE_SDL2
+		SDL_Event event;
+		if (SDL_PollEvent(&event)) {
+			if (event.window.event == SDL_WINDOWEVENT_CLOSE)
+				bQuit = true;
+		}
+#elif defined(WIN32)
 		if( PeekMessage( &rMsg , rWnd.get_hwnd() , 0 , 0 , PM_REMOVE ) ) {
 			TranslateMessage( &rMsg ) ;
 			DispatchMessage( &rMsg );

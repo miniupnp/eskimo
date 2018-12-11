@@ -18,6 +18,9 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #endif
+#ifdef USE_SDL2
+#include <SDL.h>
+#endif
 #include <GL/gl.h>
 #include "PajaTypes.h"
 #include "ColorC.h"
@@ -55,7 +58,11 @@ public:
 	GLWindowC();
 	~GLWindowC();
 
-#ifdef WIN32
+#ifdef USE_SDL2
+	bool		init( PajaTypes::uint32 ui32Flags,
+					  PajaTypes::uint32 ui32Width = 0, PajaTypes::uint32 ui32Height = 0,
+					  PajaTypes::uint32 ui32BPP = 0 );
+#elif defined(WIN32)
 	bool		init( HINSTANCE hInstance, PajaTypes::uint32 ui32Flags,
 					  PajaTypes::uint32 ui32Width = 0, PajaTypes::uint32 ui32Height = 0,
 					  PajaTypes::uint32 ui32BPP = 0 );
@@ -89,7 +96,10 @@ public:
 	bool				get_pressed( PajaTypes::int32 i32Flags );
 
 protected:
-#ifdef WIN32
+#ifdef USE_SDL2
+	SDL_Window *       m_window;
+	SDL_GLContext      m_glcontext;
+#elif defined(WIN32)
 	static bool				set_pixelformat( HDC hDC, PajaTypes::int32 i32BPP );
 	static LRESULT CALLBACK	stub_window_proc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
 

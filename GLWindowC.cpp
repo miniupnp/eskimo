@@ -15,6 +15,9 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #endif
+#ifdef USE_SDL2
+#include <SDL.h>
+#endif
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <stdio.h>
@@ -50,9 +53,34 @@ GLWindowC::~GLWindowC()
 	if( m_hWnd )
 		destroy();
 #endif
+// TODO SDL2
 }
 
-#ifdef WIN32
+#ifdef USE_SDL2
+bool
+GLWindowC::init( uint32 ui32Flags, uint32 ui32Width, uint32 ui32Height, uint32 ui32BPP )
+{
+	//if( ui32Flags == GRAPHICSDEVICE_CREATE_WINDOWED ) {
+
+		// Create popup window
+		m_window = SDL_CreateWindow("The ESKIMO Fishing Trip", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+		                            ui32Width, ui32Height, SDL_WINDOW_OPENGL|SDL_WINDOW_SHOWN);
+		if (m_window == NULL) {
+			SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to Create Window : %s\n", SDL_GetError());
+			return false;
+		}
+
+		set_size( 0, 0, ui32Width, ui32Height );
+	//}
+	m_glcontext = SDL_GL_CreateContext(m_window);
+	if (m_glcontext == NULL) {
+		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to Create OpeGL Context : %s\n", SDL_GetError());
+		return false;
+	}
+	return true;
+}
+
+#elif defined(WIN32)
 LRESULT CALLBACK
 GLWindowC::stub_window_proc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 {

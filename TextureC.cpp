@@ -61,8 +61,12 @@ TextureC::load( const char* szName )
 	FILE*	pStream;
 
 	pStream = fopen( szName, "rb" );
-	if( !pStream )
+	if( !pStream ) {
+		OutputDebugString( "Failed to open " );
+		OutputDebugString( szName );
+		OutputDebugString( "\n" );
 		return false;
+	}
 
 	fseek( pStream, 0, SEEK_END );
 
