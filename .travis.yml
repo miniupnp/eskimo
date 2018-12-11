@@ -1,0 +1,21 @@
+language: cpp
+
+os:
+  - linux
+  - osx
+
+addons:
+  apt:
+    packages:
+    - libsdl2-dev
+    - libsdl2-image-dev
+
+sudo: false
+
+before_install:
+  - 'if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew update > /dev/null ; fi'
+  - 'if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install sdl2 sdl2_image ; fi'
+
+script:
+  - 'cd $TRAVIS_BUILD_DIR'
+  - 'make -j3'
